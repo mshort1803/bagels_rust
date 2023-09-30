@@ -20,16 +20,15 @@ impl SecretNumber {
 	    str += format!("{}", numbers[index]).as_str();
 	}
 
-	
 	Self {
 	    secret_number: str,
-	}
-    }
+  }
+  }
 
     fn get(&self) -> &String {
 	&self.secret_number
     }
-    
+
     fn to_vec(&self) -> Vec<char> {
 	self.secret_number.chars().collect()
     }
@@ -38,8 +37,8 @@ impl SecretNumber {
 fn get_input() -> Option<String> {
     let mut buffer = String::new();
     match io::stdin().read_line(&mut buffer) {
-	Ok(_) => Some(buffer),
-	Err(_) => None,
+	      Ok(_) => Some(buffer),
+	      Err(_) => None,
     }
 }
 
@@ -71,7 +70,7 @@ fn get_hints<'a>(secret:  &SecretNumber, player_guess: &String) -> Result<String
 
 fn main() {
     let secret_num = SecretNumber::new();
-    
+
     println!("I have selected a three digit number that contains no repeated digits. you have {MAX_TURNS} guesses to guess what it is");
 
     for i in 1..=MAX_TURNS {
@@ -82,8 +81,11 @@ fn main() {
 	};
 	match get_hints(&secret_num, &input) {
 	    Ok(v) => {
-		println!("{}", v);
-		break;
+		      println!("{}", v);
+          println!("Press any key to continue...");
+          match get_input() {
+              _ => break,
+          }
 	    },
 	    Err(e) => println!("{:?}", e),
 	}
