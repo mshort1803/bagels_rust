@@ -1,6 +1,7 @@
 use rand::seq::SliceRandom;
-use zen_colour::*;
+use zen_colour::{RED, GREEN, CYAN, RESET};
 use std::io;
+use std::io::Write;
 
 const MAX_TURNS: u32 = 10;
 
@@ -44,7 +45,7 @@ fn check_guess (secret: &SecretNumber, player_guess: &String) -> bool {
     &secret.get().trim() == &player_guess.trim()
 }
 
-fn get_hints<'a>(secret: &SecretNumber, player_guess: &String) -> Result<bool, Vec<String>> {
+fn get_hints(secret: &SecretNumber, player_guess: &String) -> Result<bool, Vec<String>> {
     let secret_vec = secret.to_vec();
     let player_guess_vec: Vec<char> = player_guess.chars().collect();
 
@@ -80,6 +81,8 @@ fn main() {
         let mut win: bool = false;
 
         println!("How many digits would you like in the secret number?");
+        print!("> ");
+        let _ = std::io::stdout().flush();
         let num_digits: u8 = match get_input().expect("something went wrong").trim().parse() {
             Ok(v) => {
                 match v {
@@ -108,8 +111,10 @@ fn main() {
         println!("|-----------------------------------------------------------------|");
 
         let secret_num = SecretNumber::new(num_digits);
-        for mut i in 1..=MAX_TURNS {
+        for i in 1..=MAX_TURNS {
             println!("Turn {}", i);
+            print!("> ");
+            let _ = std::io::stdout().flush();
             let input = match get_input() {
                 Some(value) => value,
                 None => continue,
@@ -142,7 +147,8 @@ fn main() {
             println!("Sorry, you lose");
         }
         println!("Would you like to play again? (y/n)");
-
+        print!("> ");
+        let _ = std::io::stdout().flush();
         if get_input().expect("invalid input").to_lowercase().trim() != "y" {
             break;
         }
