@@ -1,7 +1,7 @@
 use rand::seq::SliceRandom;
+use zen_colour::*;
 use std::io;
 
-const NUM_DIGITS: u8 = 3;
 const MAX_TURNS: u32 = 10;
 
 struct SecretNumber {
@@ -44,14 +44,13 @@ fn check_guess (secret: &SecretNumber, player_guess: &String) -> bool {
     &secret.get().trim() == &player_guess.trim()
 }
 
-fn get_hints<'a>(secret: &SecretNumber, player_guess: &String) -> Result<bool, Vec<&'a str>> {
+fn get_hints<'a>(secret: &SecretNumber, player_guess: &String) -> Result<bool, Vec<String>> {
     let secret_vec = secret.to_vec();
     let player_guess_vec: Vec<char> = player_guess.chars().collect();
-    println!("{}", secret_vec.len());
 
     let mut hints = vec![];
     for _ in 0..secret_vec.len() {
-        hints.push("bagel");
+        hints.push(format!("{}bagel{}", RED, RESET));
     }
 
     for index in 0..secret_vec.len() {
@@ -59,11 +58,11 @@ fn get_hints<'a>(secret: &SecretNumber, player_guess: &String) -> Result<bool, V
         let index: usize = index.into();
 
         if secret.get().contains(player_guess_vec[index]) {
-            hints[index] = "pico";
+            hints[index] = format!("{}pico{}", CYAN, RESET);
         }
 
         if player_guess_vec[index] == secret_vec[index] {
-            hints[index] = "fermi";
+            hints[index] = format!("{}fermi{}", GREEN, RESET);
         }
     }
     Err(hints)
@@ -103,13 +102,13 @@ fn main() {
         println!("|-----------------------------------------------------------------|");
         println!("| When I say  | That means                                        |");
         println!("|-----------------------------------------------------------------|");
-        println!("| Pico        | One digit is correct, but it's in the wrong place |");
-        println!("| Fermi       | One digit is correct and it's in the right place  |");
-        println!("| Bagel       | No digit is correct                               |");
+        println!("| {}Pico{}        | One digit is correct, but it's in the wrong place |", CYAN, RESET);
+        println!("| {}Fermi{}       | One digit is correct and it's in the right place  |", GREEN, RESET);
+        println!("| {}Bagel{}       | No digit is correct                               |", RED, RESET);
         println!("|-----------------------------------------------------------------|");
 
         let secret_num = SecretNumber::new(num_digits);
-        for i in 1..=MAX_TURNS {
+        for mut i in 1..=MAX_TURNS {
             println!("Turn {}", i);
             let input = match get_input() {
                 Some(value) => value,
@@ -129,11 +128,16 @@ fn main() {
                         _ => break,
                     }
                 }
-                Err(e) => println!("{:?}", e),
+                Err(e) => {
+                    for hint in e {
+                        print!("{} ", hint);
+                    }
+                    println!("");
+                },
             }
         }
         if win {
-            println!("You Win!")
+            println!("You Win!");
         } else {
             println!("Sorry, you lose");
         }
